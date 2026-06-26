@@ -1,4 +1,4 @@
-# fleet-dist — Portable Agent Fleet
+# agent-fleet — Portable Agent Fleet
 
 A self-contained, project-agnostic distribution of the **planner / researcher / critic / validator** agent
 fleet for GitHub Copilot CLI, plus the orchestration loop, plan-management, and CEARFS quality rubric.
@@ -9,7 +9,7 @@ new project means *copy + edit one file*.
 
 ## Contents
 ```
-fleet-dist/
+agent-fleet/
 ├── SETUP.md          ← give this to an agent in the target project; it installs/upgrades the fleet
 ├── README.md         ← this file (human overview)
 └── payload/          ← the files that get copied into the target repo root
@@ -23,7 +23,7 @@ fleet-dist/
 ## Install (two ways)
 
 **Agent-driven (recommended).** In the target project, point an agent at the installer:
-> "Read `fleet-dist/SETUP.md` and install the fleet into this project."
+> "Read `agent-fleet/SETUP.md` and install the fleet into this project."
 
 The agent copies `payload/` to the repo root, detects the stack, fills in `fleet-config.instructions.md`,
 and verifies. It also handles the **upgrade** case (merge, never clobber a customized config).
@@ -40,5 +40,5 @@ toolchain. See `SETUP.md` for per-stack examples (Go / Node / Rust / docs-only).
 GitHub Copilot CLI (custom `.agent.md` agents + the task tool). The fleet is Copilot-CLI-native.
 
 ## Notes
-- This `fleet-dist/` folder is a **staging/distribution** artifact — keep it out of the product repo (or
+- This `agent-fleet/` folder is a **staging/distribution** artifact — keep it out of the product repo (or
   delete after copying). Don't ship `SETUP.md` / this `README.md` into target projects; only `payload/`.
