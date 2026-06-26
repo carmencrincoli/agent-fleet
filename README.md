@@ -12,24 +12,29 @@ new project means *copy + edit one file*.
 agent-fleet/
 ├── SETUP.md          ← give this to an agent in the target project; it installs/upgrades the fleet
 ├── README.md         ← this file (human overview)
-└── payload/          ← the files that get copied into the target repo root
-    ├── .github/
+└── payload/
+    ├── dot-github/   ← INSTALL AS `.github/` (renamed; a literal .github can't be stored in transport)
     │   ├── agents/        planner, researcher, critic, validator (.agent.md)
     │   ├── skills/        fleet-loop/, plan-management/ (SKILL.md)
     │   └── instructions/  fleet-config (EDIT), fleet, plan, quality-rubric (+ detail)
-    └── plans/digests/  README (digest convention)
+    └── plans/digests/  README (digest convention; keeps its name)
 ```
+
+> **Why `dot-github/`?** GitHub treats a top-level `.github/` folder specially and won't let you upload one
+> under that name in this transport. So the payload ships it as `dot-github/`; the installer (SETUP.md)
+> expands it back to the real `.github/` in the target repo. `plans/` is copied as-is.
 
 ## Install (two ways)
 
 **Agent-driven (recommended).** In the target project, point an agent at the installer:
 > "Read `agent-fleet/SETUP.md` and install the fleet into this project."
 
-The agent copies `payload/` to the repo root, detects the stack, fills in `fleet-config.instructions.md`,
-and verifies. It also handles the **upgrade** case (merge, never clobber a customized config).
+The agent copies the payload (renaming `dot-github/` -> `.github/`), detects the stack, fills in
+`fleet-config.instructions.md`, and verifies. It also handles the **upgrade** case (merge, never clobber a
+customized config).
 
-**Manual.** Copy `payload/*` to the target repo root, then edit
-`.github/instructions/fleet-config.instructions.md` for your stack.
+**Manual.** Copy `payload/dot-github/*` into the target repo's `.github/` and `payload/plans/*` into its
+`plans/`, then edit `.github/instructions/fleet-config.instructions.md` for your stack.
 
 ## What you must configure
 Just `fleet-config.instructions.md`: `SOURCE_DIRS`, `TEST_DIRS`, `TEST_COMMAND`, `COVERAGE_COMMAND`,
@@ -41,4 +46,5 @@ GitHub Copilot CLI (custom `.agent.md` agents + the task tool). The fleet is Cop
 
 ## Notes
 - This `agent-fleet/` folder is a **staging/distribution** artifact — keep it out of the product repo (or
-  delete after copying). Don't ship `SETUP.md` / this `README.md` into target projects; only `payload/`.
+  delete after copying). Don't ship `SETUP.md` / this `README.md` into target projects; only the `payload/`
+  (expanded so `dot-github/` becomes `.github/`).

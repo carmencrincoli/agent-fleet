@@ -6,7 +6,15 @@ runbook: read it fully, then perform the steps. The fleet is a set of read-only 
 **Plan → Research → Digest → Critique → Execute → Validate**, gated by a CEARFS quality rubric.
 
 Everything you install lives under `payload/` in this distribution. The install is just: copy `payload/`
-into the target repo root, then fill in **one** config file for the local stack.
+into the target repo (mapping `dot-github/` -> `.github/`, see below), then fill in **one** config file.
+
+> ⚠️ **Storage note — the `.github` rename.** This distribution stores the agent files under
+> **`payload/dot-github/`**, NOT `payload/.github/`, because a literal `.github` folder can't be carried in
+> this transport (GitHub treats a top-level `.github/` specially and rejects uploading it by that name).
+> **On install you MUST recreate it as the real `.github/`** in the target repo: copy the *contents* of
+> `payload/dot-github/` into the target's `.github/`. The `payload/plans/` folder keeps its name as-is.
+> If you (an agent) are building/storing this fleet by reading a repo, always keep the source folder named
+> `dot-github/` and only expand it to `.github/` at the install destination.
 
 ---
 
@@ -21,25 +29,27 @@ into the target repo root, then fill in **one** config file for the local stack.
 
 ## Step 1 — Copy the payload into the repo root
 
-Copy the contents of `payload/` so they land at the repo root:
+Copy the payload into the target repo, **renaming `dot-github` -> `.github`** as you go:
 
 ```
-payload/.github/agents/planner.agent.md          -> .github/agents/planner.agent.md
-payload/.github/agents/researcher.agent.md        -> .github/agents/researcher.agent.md
-payload/.github/agents/critic.agent.md            -> .github/agents/critic.agent.md
-payload/.github/agents/validator.agent.md         -> .github/agents/validator.agent.md
-payload/.github/skills/fleet-loop/SKILL.md        -> .github/skills/fleet-loop/SKILL.md
-payload/.github/skills/plan-management/SKILL.md    -> .github/skills/plan-management/SKILL.md
-payload/.github/instructions/*.instructions.md     -> .github/instructions/
-payload/plans/digests/README.md                    -> plans/digests/README.md
+payload/dot-github/agents/planner.agent.md         -> .github/agents/planner.agent.md
+payload/dot-github/agents/researcher.agent.md       -> .github/agents/researcher.agent.md
+payload/dot-github/agents/critic.agent.md           -> .github/agents/critic.agent.md
+payload/dot-github/agents/validator.agent.md        -> .github/agents/validator.agent.md
+payload/dot-github/skills/fleet-loop/SKILL.md       -> .github/skills/fleet-loop/SKILL.md
+payload/dot-github/skills/plan-management/SKILL.md   -> .github/skills/plan-management/SKILL.md
+payload/dot-github/instructions/*.instructions.md    -> .github/instructions/
+payload/plans/digests/README.md                      -> plans/digests/README.md
 ```
 
 Create parent directories as needed. Do not copy this `SETUP.md` or the dist `README.md` into the target.
 
-PowerShell one-liner (run from the dist folder):
+PowerShell (run from the `agent-fleet` folder) — note the `dot-github` -> `.github` rename:
 ```powershell
 $dest = "C:\path\to\target-repo"
-Copy-Item ".\payload\*" $dest -Recurse -Force
+New-Item -ItemType Directory -Force -Path (Join-Path $dest ".github"), (Join-Path $dest "plans") | Out-Null
+Copy-Item ".\payload\dot-github\*" (Join-Path $dest ".github") -Recurse -Force   # dot-github -> .github
+Copy-Item ".\payload\plans\*"       (Join-Path $dest "plans")   -Recurse -Force
 ```
 
 ---
